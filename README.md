@@ -1,6 +1,8 @@
 # HW07 PHP and MySQL Databases
 
-## <First Name - Last Name>
+## Don Stringham
+
+donbstringham
 
 ### Initial Setup
 
