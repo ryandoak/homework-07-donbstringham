@@ -46,16 +46,33 @@ class PartOneTest extends TestCase
     {
         $this->_host = "143.110.159.170";
         $this->_port = "3306";
-        $this->_username = "student";
+        $this->_username = "donstringham";
         $this->_password = "letmein";
         $this->_connection = null;
-        $this->_database = 'student';
+        $this->_database = 'donstringham';
         $this->_connection = mysqli_connect(
             $this->_host,
             $this->_username,
             $this->_password
         );
         $this->_connection->select_db($this->_database);
+    }
+
+    /**
+     * Tear down data needed for every unit-test
+     *
+     * @category UnitTests
+     * @package  App\Tests
+     * @author   Don Stringham <donstringham@weber.edu>
+     * @license  MIT https://opensource.org/licenses/MIT
+     * @link     https://weber.edu
+     * @return   void
+     */
+    public function tearDown() : void
+    {
+        // $query = "TRUNCATE donstringham.test";
+        // $this->_connection->query($query);
+        $this->_connection->close();
     }
 
     /**
@@ -75,7 +92,7 @@ class PartOneTest extends TestCase
     }
 
     /**
-     * Tests prime numbers
+     * Tests select all
      *
      * @category UnitTests
      * @package  App\Tests
@@ -87,11 +104,73 @@ class PartOneTest extends TestCase
     public function testSelectAll(): void
     {
         // arrange
-        $query = "SELECT * FROM student.test";
-        // act
+        $query = "INSERT INTO test (col_number, col_string, col_dttm) VALUES(1, 'One', now())";
+        $this->_connection->query($query);
+        $query = "SELECT * FROM donstringham.test";
         $result = $this->_connection->query($query);
+        // act
         $row = $result->fetch_row();
         // assert
         $this->assertEquals('1', $row[0]);
+    }
+
+    /**
+     * Tests insert first row
+     *
+     * @category UnitTests
+     * @package  App\Tests
+     * @author   Don Stringham <donstringham@weber.edu>
+     * @license  MIT https://opensource.org/licenses/MIT
+     * @link     https://weber.edu
+     * @return   void
+     */
+    public function testInsertFirstRow(): void
+    {
+        // arrange
+        $query = "INSERT INTO test (col_number, col_string, col_dttm) VALUES(1, 'One', now());";
+        // act
+        $result = $this->_connection->query($query);
+        // assert
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Tests insert first row improper validation
+     *
+     * @category UnitTests
+     * @package  App\Tests
+     * @author   Don Stringham <donstringham@weber.edu>
+     * @license  MIT https://opensource.org/licenses/MIT
+     * @link     https://weber.edu
+     * @return   void
+     */
+    public function testBadValidationStringForInt(): void
+    {
+        // arrange
+        $query = "INSERT INTO test (col_number, col_string, col_dttm) VALUES('One', 'One', now());";
+        // act
+        $result = $this->_connection->query($query);
+        // assert
+        $this->assertFalse($result);
+    }
+
+    /**
+     * Tests insert first row improper validation
+     *
+     * @category UnitTests
+     * @package  App\Tests
+     * @author   Don Stringham <donstringham@weber.edu>
+     * @license  MIT https://opensource.org/licenses/MIT
+     * @link     https://weber.edu
+     * @return   void
+     */
+    public function testBadValidationReversedDTTM(): void
+    {
+        // arrange
+        $query = "INSERT INTO test (col_number, col_string, col_dttm) VALUES(1, 'One', '08:44:44 2020-10-10');";
+        // act
+        $result = $this->_connection->query($query);
+        // assert
+        $this->assertFalse($result);
     }
 }
