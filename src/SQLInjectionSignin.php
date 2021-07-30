@@ -19,21 +19,29 @@ if (filter_var($ip, FILTER_VALIDATE_IP) === false) {
     throw new \RuntimeException("ERROR: FILTER_VALIDATE_IP failed");
 }
 
-// URL with SQL injection: http://localhost:8000/SQLInjection.php?col_string=%27Two%27+OR+1=1--&col_number=2
 // TODO change this below code to prevent SQL Injection
-$conn = mysqli_connect($ip, 'student', 'letmein', 'student');
-$query = "SELECT * FROM test WHERE col_string = {$_GET['col_string']} AND col_number = {$_GET['col_number']}";
+$conn = mysqli_connect($ip, 'donstringham', 'letmein', 'donstringham');
+$query = 'SELECT * FROM usr WHERE email="'.$_GET["email"].'" AND passwrd="'.$_GET["pass"].'"';
+
+echo "<br/>";
+print_r($query);
+echo "<br/>";
+echo "<br/>";
 
 $result = mysqli_query($conn, $query);
 if (is_bool($result)) {
     throw new \RuntimeException('ERROR: result is a boolean and NOT a result set');
 }
-$num_row = mysqli_num_rows($result);
 
-print('Retrieved '.$num_row.' row(s)</br></br>');
+print('Retrieved '.mysqli_num_rows($result).' row(s)</br></br>');
+$field_count = mysqli_num_fields($result);
 
 while ($row = mysqli_fetch_row($result)) {
-    printf('<li>%s, %s, %s, %s, %s</li></br>', $row[0],$row[1],$row[2],$row[3],$row[4]);
+    echo "<li>";
+    for ($i = 0; $i < $field_count; $i++) {
+        echo " | ".$row[$i];
+    }
+    echo " |</li>";
 }
 
 mysqli_free_result($result);
